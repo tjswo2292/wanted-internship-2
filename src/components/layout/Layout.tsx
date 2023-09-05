@@ -1,7 +1,12 @@
+import { Outlet } from 'react-router-dom'
 import { styled } from 'styled-components'
 
 const Layout = () => {
-  return <Box>Layout</Box>
+  return (
+    <Box>
+      <Outlet />
+    </Box>
+  )
 }
 
 const Box = styled.div`
