@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
