@@ -37,7 +37,9 @@ const SearchInput = () => {
       }
     }
 
-    fetchSearchWord(searchWord)
+    if (searchWord !== '') {
+      fetchSearchWord(searchWord)
+    }
   }, [searchWord])
 
   return (
