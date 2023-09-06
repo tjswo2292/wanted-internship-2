@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import React, {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
@@ -14,6 +20,7 @@ import { SearchKeywordContext } from '../../context/SeachKeywordProvider'
 
 const SearchInput = () => {
   const [searchWord, setSearchWord] = useState('')
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   const { setIsModal }: any = useContext(InputModalContext)
   const { setSearchKeywordList }: any = useContext(SearchKeywordContext)
@@ -36,10 +43,21 @@ const SearchInput = () => {
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    setSearchKeywordList((prev: object[]) => [
-      ...prev,
-      { id: searchWord, text: searchWord },
-    ])
+    if (searchWord !== '') {
+      setSearchKeywordList((prev: object[]) => [
+        ...prev,
+        { id: searchWord, text: searchWord },
+      ])
+    }
+
+    InputValueInit()
+  }
+
+  const InputValueInit = () => {
+    if (inputRef.current) {
+      inputRef.current.value = ''
+      inputRef.current.focus()
+    }
   }
 
   useEffect(() => {
@@ -70,6 +88,7 @@ const SearchInput = () => {
           </InputIconWrapper>
         )}
         <Input
+          ref={inputRef}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             dispatchDebounce(() => handleInputChange(e))
           }}
