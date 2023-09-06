@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
 
 import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
@@ -7,11 +7,16 @@ import SubmitButton from './SubmitButton'
 import TextCancelBtn from './TextCancelBtn'
 import useSearchIcon from './hook/useSearchIcon'
 import useCancelButton from './hook/useCancelButton'
-import { publicApi } from '../../api/publicApi'
 import useDebounce from './hook/useDebounce'
+import { publicApi } from '../../api/publicApi'
+import { InputModalContext } from '../../context/InputModalProvider'
+import { SearchKeywordContext } from '../../context/SeachKeywordProvider'
 
 const SearchInput = () => {
   const [searchWord, setSearchWord] = useState('')
+
+  const { setIsModal }: any = useContext(InputModalContext)
+  const { setSearchKeywordList }: any = useContext(SearchKeywordContext)
 
   const [isShowSearchIcon, changeSearchIconShow] = useSearchIcon()
   const [isCancelBtnShow, changeCancelBtnShow] = useCancelButton()
@@ -20,11 +25,21 @@ const SearchInput = () => {
   const handleInputFocus = () => {
     changeSearchIconShow()
     changeCancelBtnShow()
+    setIsModal((prev: boolean) => !prev)
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setSearchWord(value)
+  }
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    setSearchKeywordList((prev: object[]) => [
+      ...prev,
+      { id: searchWord, text: searchWord },
+    ])
   }
 
   useEffect(() => {
@@ -43,26 +58,26 @@ const SearchInput = () => {
   }, [searchWord])
 
   return (
-    <Box>
+    <Box
+      onSubmit={handleSearchSubmit}
+      onFocus={handleInputFocus}
+      onBlur={handleInputFocus}
+    >
       <Wrapper>
-        <Input
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            dispatchDebounce(() => handleInputChange(e))
-          }}
-          onFocus={handleInputFocus}
-          onBlur={handleInputFocus}
-          type="text"
-          placeholder="질환명을 입력해주세요"
-        />
         {isShowSearchIcon && (
           <InputIconWrapper>
             <InputIcon />
           </InputIconWrapper>
         )}
+        <Input
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            dispatchDebounce(() => handleInputChange(e))
+          }}
+          type="text"
+          placeholder="질환명을 입력해주세요"
+        />
       </Wrapper>
-
       {isCancelBtnShow && <TextCancelBtn />}
-
       <SubmitBtnWrapper>
         <SubmitButton />
       </SubmitBtnWrapper>
