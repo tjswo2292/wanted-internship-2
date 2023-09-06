@@ -1,20 +1,70 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+
 import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
+
 import SubmitButton from './SubmitButton'
+import TextCancelBtn from './TextCancelBtn'
+import useSearchIcon from './hook/useSearchIcon'
+import useCancelButton from './hook/useCancelButton'
+import { publicApi } from '../../api/publicApi'
+import useDebounce from './hook/useDebounce'
 
 const SearchInput = () => {
+  const [searchWord, setSearchWord] = useState('')
+
+  const [isShowSearchIcon, changeSearchIconShow] = useSearchIcon()
+  const [isCancelBtnShow, changeCancelBtnShow] = useCancelButton()
+  const [dispatchDebounce] = useDebounce()
+
+  const handleInputFocus = () => {
+    changeSearchIconShow()
+    changeCancelBtnShow()
+  }
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    setSearchWord(value)
+  }
+
+  useEffect(() => {
+    const fetchSearchWord = async (searchKeyword: string) => {
+      try {
+        const response = await publicApi.GET(searchKeyword)
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchSearchWord(searchWord)
+  }, [searchWord])
+
   return (
     <Box>
       <Wrapper>
-        <Input type="text" placeholder="질환명을 입력해주세요" />
-        <InputIconWrapper>
-          <InputIcon />
-        </InputIconWrapper>
+        <Input
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            dispatchDebounce(() => handleInputChange(e))
+          }}
+          onFocus={handleInputFocus}
+          onBlur={handleInputFocus}
+          type="text"
+          placeholder="질환명을 입력해주세요"
+        />
+        {isShowSearchIcon && (
+          <InputIconWrapper>
+            <InputIcon />
+          </InputIconWrapper>
+        )}
       </Wrapper>
+
+      {isCancelBtnShow && <TextCancelBtn />}
+
       <SubmitBtnWrapper>
         <SubmitButton />
       </SubmitBtnWrapper>
-      {/* <MdCancel /> 입력값 전체 삭제 버튼 */}
     </Box>
   )
 }
