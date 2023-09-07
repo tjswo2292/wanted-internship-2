@@ -2,7 +2,9 @@ import React, { createContext, useState } from 'react'
 
 export type SearchKeywordContextType = {
   searchKeywordList: object[]
-  setSearchKeywordList: React.Dispatch<React.SetStateAction<object[]>>
+  updateKeywordList: (data: object[]) => void
+  includeKeyword: object[]
+  updateIncludeKeyword: (data: object[]) => void
 }
 
 type SearchKeywordProviderProps = {
@@ -16,10 +18,24 @@ const SeachKeywordProvider: React.FC<SearchKeywordProviderProps> = ({
   children,
 }) => {
   const [searchKeywordList, setSearchKeywordList] = useState<object[]>([])
+  const [includeKeyword, setIncludeKeyword] = useState<object[]>([])
+
+  const updateKeywordList = (data: object[]) => {
+    setSearchKeywordList(data)
+  }
+
+  const updateIncludeKeyword = (data: object[]) => {
+    setIncludeKeyword(data)
+  }
 
   return (
     <SearchKeywordContext.Provider
-      value={{ searchKeywordList, setSearchKeywordList }}
+      value={{
+        searchKeywordList,
+        updateKeywordList,
+        includeKeyword,
+        updateIncludeKeyword,
+      }}
     >
       {children}
     </SearchKeywordContext.Provider>

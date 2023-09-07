@@ -4,24 +4,38 @@ import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
 
 import { SearchKeywordContext } from '../../context/SeachKeywordProvider'
+import IncludeSearch from './IncludeSearch'
 
 const Recommend = () => {
-  const { searchKeywordList }: any = useContext(SearchKeywordContext)
+  const { searchKeywordList, includeKeyword }: any =
+    useContext(SearchKeywordContext)
 
   return (
     <Box>
-      <Title>최근 검색어</Title>
+      <TitleWrapper>
+        <Title>최근 검색어</Title>
+        {searchKeywordList.length === 0 && (
+          <NothingWrapper>
+            <Nothing>최근 검색어가 없습니다</Nothing>
+          </NothingWrapper>
+        )}
+      </TitleWrapper>
       <RecentList>
-        {searchKeywordList &&
-          searchKeywordList.map((element: any, index: any) => (
-            <RecentKeywordWrapper key={index}>
-              <RecentKeywordItemWrapper>
-                <SearchInconWrapper>
-                  <SearchIcon />
-                </SearchInconWrapper>
-                <RecentKeyword>{element.text}</RecentKeyword>
-              </RecentKeywordItemWrapper>
-            </RecentKeywordWrapper>
+        {searchKeywordList.map((element: any, index: any) => (
+          <RecentKeywordWrapper key={index}>
+            <RecentKeywordItemWrapper>
+              <SearchInconWrapper>
+                <SearchIcon />
+              </SearchInconWrapper>
+              <RecentKeyword>{element.text}</RecentKeyword>
+            </RecentKeywordItemWrapper>
+          </RecentKeywordWrapper>
+        ))}
+      </RecentList>
+      <RecentList>
+        {includeKeyword &&
+          includeKeyword.map((element: any) => (
+            <IncludeSearch key={element.sickCd} text={element.sickNm} />
           ))}
       </RecentList>
     </Box>
@@ -33,12 +47,13 @@ const Box = styled.div`
   height: inherit;
   overflow-y: scroll;
 `
-const Title = styled.p`
+const TitleWrapper = styled.div`
   margin: 2rem 2rem 1.5rem 2rem;
   font-size: 1.2rem;
   font-weight: bold;
   color: #888;
 `
+const Title = styled.span``
 const RecentList = styled.ol`
   height: 5;
 `
@@ -65,5 +80,9 @@ const SearchIcon = styled(BiSearch)`
 const RecentKeyword = styled.span`
   font-size: 1.6rem;
 `
+const NothingWrapper = styled.div`
+  margin-top: 2rem;
+`
+const Nothing = styled.span``
 
 export default Recommend

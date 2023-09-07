@@ -22,8 +22,9 @@ const SearchInput = () => {
   const [searchWord, setSearchWord] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const { setIsModal }: any = useContext(InputModalContext)
-  const { setSearchKeywordList }: any = useContext(SearchKeywordContext)
+  const { updateIsModal }: any = useContext(InputModalContext)
+  const { updateKeywordList, updateIncludeKeyword }: any =
+    useContext(SearchKeywordContext)
 
   const [isShowSearchIcon, changeSearchIconShow] = useSearchIcon()
   const [isCancelBtnShow, changeCancelBtnShow] = useCancelButton()
@@ -32,7 +33,7 @@ const SearchInput = () => {
   const handleInputFocus = () => {
     changeSearchIconShow()
     changeCancelBtnShow()
-    setIsModal((prev: boolean) => !prev)
+    updateIsModal((prev: boolean) => !prev)
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,13 +45,14 @@ const SearchInput = () => {
     e.preventDefault()
 
     if (searchWord !== '') {
-      setSearchKeywordList((prev: object[]) => [
+      updateKeywordList((prev: object[]) => [
         ...prev,
         { id: searchWord, text: searchWord },
       ])
     }
 
     InputValueInit()
+    updateIncludeKeyword([])
   }
 
   const InputValueInit = () => {
@@ -64,15 +66,16 @@ const SearchInput = () => {
     const fetchSearchWord = async (searchKeyword: string) => {
       try {
         const response = await publicApi.GET(searchKeyword)
-        console.log(response)
+
+        searchKeyword === ''
+          ? updateIncludeKeyword([])
+          : updateIncludeKeyword(response.data)
       } catch (error) {
         console.log(error)
       }
     }
 
-    if (searchWord !== '') {
-      fetchSearchWord(searchWord)
-    }
+    fetchSearchWord(searchWord)
   }, [searchWord])
 
   return (
