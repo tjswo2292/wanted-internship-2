@@ -2,14 +2,10 @@ import { styled } from 'styled-components'
 import SearchInput from './SearchInput'
 import Recommend from './Recommend'
 import { useContext } from 'react'
-import {
-  InputModalContext,
-  InputModalContextType,
-} from '../../context/InputModalProvider'
+import { InputModalContext } from '../../context/InputModalProvider'
 
 const Main = () => {
-  const { isModal }: InputModalContextType = useContext(InputModalContext)
-  // 현재 버그
+  const { isModal }: any = useContext(InputModalContext)
 
   return (
     <Box>
