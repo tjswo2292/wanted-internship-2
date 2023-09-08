@@ -2,7 +2,7 @@ import { BiSearch } from 'react-icons/bi'
 import { styled } from 'styled-components'
 
 interface IncludeSearchProps {
-  text: string
+  text?: string
 }
 
 const IncludeSearch = ({ text }: IncludeSearchProps) => {
