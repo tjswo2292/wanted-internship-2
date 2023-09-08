@@ -1,17 +1,15 @@
-import { GlobalStyle } from './style/GlobalStyle'
+import { Provider } from 'react-redux'
 
 import Router from './routes/Router'
-import InputModalProvider from './context/InputModalProvider'
-import SeachKeywordProvider from './context/SeachKeywordProvider'
+import { GlobalStyle } from './style/GlobalStyle'
+import { store } from './store/store'
 
 function App() {
   return (
-    <InputModalProvider>
-      <SeachKeywordProvider>
-        <Router />
-        <GlobalStyle />
-      </SeachKeywordProvider>
-    </InputModalProvider>
+    <Provider store={store}>
+      <Router />
+      <GlobalStyle />
+    </Provider>
   )
 }
 
