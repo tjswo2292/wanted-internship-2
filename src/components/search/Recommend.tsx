@@ -1,14 +1,21 @@
-import { useContext } from 'react'
+import { useRef } from 'react'
 
 import styled from 'styled-components'
-import { BiSearch } from 'react-icons/bi'
 
-import { SearchKeywordContext } from '../../context/SeachKeywordProvider'
 import IncludeSearch from './IncludeSearch'
+import { useAppSelector } from '../../store/hooks'
+import {
+  IncludeKeywordItemType,
+  SearchKeywordItemType,
+} from '../../store/slice/searchSlice'
+import RecentKeywordItem from './RecentKeywordItem'
 
 const Recommend = () => {
-  const { searchKeywordList, includeKeyword }: any =
-    useContext(SearchKeywordContext)
+  const autoKeywordRef = useRef<HTMLOListElement>(null)
+
+  const { searchKeywordList, includeKeywordList } = useAppSelector(
+    (state) => state.search,
+  )
 
   return (
     <Box>
@@ -20,23 +27,17 @@ const Recommend = () => {
           </NothingWrapper>
         )}
       </TitleWrapper>
-      <RecentList>
-        {searchKeywordList.map((element: any, index: any) => (
-          <RecentKeywordWrapper key={index}>
-            <RecentKeywordItemWrapper>
-              <SearchInconWrapper>
-                <SearchIcon />
-              </SearchInconWrapper>
-              <RecentKeyword>{element.text}</RecentKeyword>
-            </RecentKeywordItemWrapper>
-          </RecentKeywordWrapper>
+      <RecentList ref={autoKeywordRef}>
+        {searchKeywordList.map(({ id, text }: SearchKeywordItemType, index) => (
+          <RecentKeywordItem key={id} index={index} text={text} />
         ))}
       </RecentList>
       <RecentList>
-        {includeKeyword &&
-          includeKeyword.map((element: any) => (
-            <IncludeSearch key={element.sickCd} text={element.sickNm} />
-          ))}
+        {includeKeywordList.map(
+          ({ sickCd, sickNm }: IncludeKeywordItemType) => (
+            <IncludeSearch key={sickCd} text={sickNm} />
+          ),
+        )}
       </RecentList>
     </Box>
   )
@@ -56,29 +57,6 @@ const TitleWrapper = styled.div`
 const Title = styled.span``
 const RecentList = styled.ol`
   height: 5;
-`
-const RecentKeywordWrapper = styled.li`
-  padding-left: 15px;
-
-  &:hover {
-    background-color: #e1e2e3;
-  }
-`
-const RecentKeywordItemWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`
-const SearchInconWrapper = styled.div`
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-`
-const SearchIcon = styled(BiSearch)`
-  width: inherit;
-  height: inherit;
-`
-const RecentKeyword = styled.span`
-  font-size: 1.6rem;
 `
 const NothingWrapper = styled.div`
   margin-top: 2rem;
