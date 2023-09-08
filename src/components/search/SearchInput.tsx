@@ -1,39 +1,31 @@
-import React, {
-  ChangeEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
 
 import SubmitButton from './SubmitButton'
-import TextCancelBtn from './TextCancelBtn'
 import useSearchIcon from './hook/useSearchIcon'
-import useCancelButton from './hook/useCancelButton'
 import useDebounce from './hook/useDebounce'
 import { publicApi } from '../../api/publicApi'
-import { InputModalContext } from '../../context/InputModalProvider'
-import { SearchKeywordContext } from '../../context/SeachKeywordProvider'
+import { useAppDispatch } from '../../store/hooks'
+import { showAuhtoSearh } from '../../store/slice/modalSlice'
+import {
+  setIncludeKeyword,
+  setSearchKeyword,
+} from '../../store/slice/searchSlice'
 
 const SearchInput = () => {
   const [searchWord, setSearchWord] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const { updateIsModal }: any = useContext(InputModalContext)
-  const { updateKeywordList, updateIncludeKeyword }: any =
-    useContext(SearchKeywordContext)
+  const dispatch = useAppDispatch()
 
   const [isShowSearchIcon, changeSearchIconShow] = useSearchIcon()
-  const [isCancelBtnShow, changeCancelBtnShow] = useCancelButton()
   const [dispatchDebounce] = useDebounce()
 
   const handleInputFocus = () => {
     changeSearchIconShow()
-    changeCancelBtnShow()
-    updateIsModal((prev: boolean) => !prev)
+    dispatch(showAuhtoSearh())
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,14 +37,11 @@ const SearchInput = () => {
     e.preventDefault()
 
     if (searchWord !== '') {
-      updateKeywordList((prev: object[]) => [
-        ...prev,
-        { id: searchWord, text: searchWord },
-      ])
+      dispatch(setSearchKeyword({ id: searchWord, text: searchWord }))
     }
 
     InputValueInit()
-    updateIncludeKeyword([])
+    dispatch(setIncludeKeyword([]))
   }
 
   const InputValueInit = () => {
@@ -64,12 +53,13 @@ const SearchInput = () => {
 
   useEffect(() => {
     const fetchSearchWord = async (searchKeyword: string) => {
+      console.log('calling api')
       try {
         const response = await publicApi.GET(searchKeyword)
 
         searchKeyword === ''
-          ? updateIncludeKeyword([])
-          : updateIncludeKeyword(response.data)
+          ? dispatch(setIncludeKeyword([]))
+          : dispatch(setIncludeKeyword(response.data))
       } catch (error) {
         console.log(error)
       }
@@ -79,12 +69,8 @@ const SearchInput = () => {
   }, [searchWord])
 
   return (
-    <Box
-      onSubmit={handleSearchSubmit}
-      onFocus={handleInputFocus}
-      onBlur={handleInputFocus}
-    >
-      <Wrapper>
+    <Box onSubmit={handleSearchSubmit}>
+      <SearchInputWrapper onFocus={handleInputFocus} onBlur={handleInputFocus}>
         {isShowSearchIcon && (
           <InputIconWrapper>
             <InputIcon />
@@ -98,29 +84,29 @@ const SearchInput = () => {
           type="text"
           placeholder="질환명을 입력해주세요"
         />
-      </Wrapper>
-      {isCancelBtnShow && <TextCancelBtn />}
-      <SubmitBtnWrapper>
-        <SubmitButton />
-      </SubmitBtnWrapper>
+        <SubmitBtnWrapper>
+          <SubmitButton />
+        </SubmitBtnWrapper>
+      </SearchInputWrapper>
     </Box>
   )
 }
 
 const Box = styled.form`
   display: flex;
+  flex-direction: column;
   align-items: center;
   position: relative;
   width: 95%;
   height: 100%;
   margin-right: 1rem;
   margin-left: 2.4rem;
+  padding: 10px 0;
 `
-const Wrapper = styled.div`
-  width: 100%;
+const SearchInputWrapper = styled.div`
+  display: flex;
+  width: inherit;
   height: inherit;
-  margin-right: 1rem;
-  padding: 15px 0;
 `
 const Input = styled.input`
   width: inherit;
@@ -143,6 +129,7 @@ const InputIcon = styled(BiSearch)`
   width: inherit;
   height: inherit;
 `
-const SubmitBtnWrapper = styled.div``
-
+const SubmitBtnWrapper = styled.div`
+  height: inherit;
+`
 export default SearchInput

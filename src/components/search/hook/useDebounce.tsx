@@ -4,7 +4,7 @@ const useDebounce = () => {
   const [timer, setTimer] = useState<ReturnType<typeof setTimeout>>()
 
   const dispatchDebounce = (callback: () => void) => {
-    const delay = 100
+    const delay = 200
 
     if (timer) {
       clearTimeout(timer)
