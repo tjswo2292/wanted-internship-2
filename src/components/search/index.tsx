@@ -5,29 +5,37 @@ import { styled } from 'styled-components'
 import SearchInput from './SearchInput'
 import Recommend from './Recommend'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
-import { keyDown, keyUp } from '../../store/slice/modalSlice'
+import { keyDown, keyEnd, keyUp } from '../../store/slice/modalSlice'
 
 const Main = () => {
   const divRef = useRef<HTMLDivElement>(null)
 
   const dispatch = useAppDispatch()
-  const { isModal } = useAppSelector((state) => state.modal)
+  const { isModal, childrenIndex, childrenElementCount } = useAppSelector(
+    (state) => state.modal,
+  )
 
-  const test = (e: React.KeyboardEvent) => {
+  const handleKeyboardEvent = (e: React.KeyboardEvent) => {
     const { key } = e
 
-    switch (key) {
-      case 'ArrowDown':
-        dispatch(keyDown())
-        break
-      case 'ArrowUp':
-        dispatch(keyUp())
-        break
+    if (childrenElementCount !== 0) {
+      switch (key) {
+        case 'ArrowDown':
+          childrenElementCount - 1 === childrenIndex
+            ? dispatch(keyEnd(0))
+            : dispatch(keyDown())
+          break
+        case 'ArrowUp':
+          0 === childrenIndex
+            ? dispatch(keyEnd(childrenElementCount - 1))
+            : dispatch(keyUp())
+          break
+      }
     }
   }
 
   return (
-    <Box onKeyDown={test} ref={divRef}>
+    <Box onKeyDown={handleKeyboardEvent} ref={divRef}>
       <SearchInputBox>
         <SearchInput />
       </SearchInputBox>

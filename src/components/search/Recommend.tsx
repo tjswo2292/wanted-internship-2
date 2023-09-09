@@ -1,21 +1,29 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import styled from 'styled-components'
 
 import IncludeSearch from './IncludeSearch'
-import { useAppSelector } from '../../store/hooks'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import {
   IncludeKeywordItemType,
   SearchKeywordItemType,
 } from '../../store/slice/searchSlice'
 import RecentKeywordItem from './RecentKeywordItem'
+import { setChildrenEelementCount } from '../../store/slice/modalSlice'
 
 const Recommend = () => {
   const autoKeywordRef = useRef<HTMLOListElement>(null)
 
+  const dispatch = useAppDispatch()
   const { searchKeywordList, includeKeywordList } = useAppSelector(
     (state) => state.search,
   )
+
+  useEffect(() => {
+    const ElementCount = autoKeywordRef.current?.childElementCount || 0
+
+    dispatch(setChildrenEelementCount(ElementCount))
+  }, [searchKeywordList])
 
   return (
     <Box>
