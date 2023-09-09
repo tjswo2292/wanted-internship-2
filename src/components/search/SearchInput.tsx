@@ -42,6 +42,7 @@ const SearchInput = () => {
 
     InputValueInit()
     dispatch(setIncludeKeyword([]))
+    setSearchWord('')
   }
 
   const InputValueInit = () => {
