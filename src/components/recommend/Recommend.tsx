@@ -10,12 +10,13 @@ import {
 } from '../../store/slice/searchSlice'
 import RecentKeywordItem from './RecentKeywordItem'
 import { setChildrenEelementCount } from '../../store/slice/modalSlice'
+import SearchPreview from './SearchPreview'
 
 const Recommend = () => {
   const autoKeywordRef = useRef<HTMLOListElement>(null)
 
   const dispatch = useAppDispatch()
-  const { searchKeywordList, includeKeywordList } = useAppSelector(
+  const { searchKeywordList, includeKeywordList, searchQuery } = useAppSelector(
     (state) => state.search,
   )
 
@@ -27,14 +28,18 @@ const Recommend = () => {
 
   return (
     <Box>
-      <TitleWrapper>
-        <Title>최근 검색어</Title>
-        {searchKeywordList.length === 0 && (
-          <NothingWrapper>
-            <Nothing>최근 검색어가 없습니다</Nothing>
-          </NothingWrapper>
-        )}
-      </TitleWrapper>
+      {searchQuery === '' ? (
+        <TitleWrapper>
+          <Title>최근 검색어</Title>
+          {searchKeywordList.length === 0 && (
+            <NothingWrapper>
+              <Nothing>최근 검색어가 없습니다</Nothing>
+            </NothingWrapper>
+          )}
+        </TitleWrapper>
+      ) : (
+        <SearchPreview />
+      )}
       <RecentList ref={autoKeywordRef}>
         {searchKeywordList.map(({ id, text }: SearchKeywordItemType, index) => (
           <RecentKeywordItem key={id} index={index} text={text} />
