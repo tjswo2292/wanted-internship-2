@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 export type ModalSliceType = {
   isModal: boolean
   childrenIndex: number
+  childrenElementCount: number
 }
 
 const initialState: ModalSliceType = {
   isModal: false,
   childrenIndex: -1,
+  childrenElementCount: 0,
 }
 
 export const modalSlice = createSlice({
@@ -23,9 +25,21 @@ export const modalSlice = createSlice({
     keyUp: (state) => {
       state.childrenIndex = state.childrenIndex - 1
     },
+    keyEnd: (state, action: PayloadAction<number>) => {
+      state.childrenIndex = action.payload
+    },
+    setChildrenEelementCount: (state, action: PayloadAction<number>) => {
+      state.childrenElementCount = action.payload
+    },
   },
 })
 
-export const { showAuhtoSearh, keyDown, keyUp } = modalSlice.actions
+export const {
+  showAuhtoSearh,
+  keyDown,
+  keyUp,
+  keyEnd,
+  setChildrenEelementCount,
+} = modalSlice.actions
 
 export default modalSlice.reducer
