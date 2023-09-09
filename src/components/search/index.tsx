@@ -3,7 +3,7 @@ import React, { useRef } from 'react'
 import { styled } from 'styled-components'
 
 import SearchInput from './SearchInput'
-import Recommend from '../recommend/Recommend'
+import Recommend from '../recommend'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { keyDown, keyEnd, keyUp } from '../../store/slice/modalSlice'
 
