@@ -13,11 +13,13 @@ export type IncludeKeywordItemType = {
 export type SearchSliceType = {
   searchKeywordList: SearchKeywordItemType[]
   includeKeywordList: IncludeKeywordItemType[]
+  searchQuery: string
 }
 
 const initialState: SearchSliceType = {
   searchKeywordList: [],
   includeKeywordList: [],
+  searchQuery: '',
 }
 
 export const seacrhSlice = createSlice({
@@ -33,8 +35,12 @@ export const seacrhSlice = createSlice({
     ) => {
       state.includeKeywordList = [...action.payload]
     },
+    setSearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload
+    },
   },
 })
 
-export const { setSearchKeyword, setIncludeKeyword } = seacrhSlice.actions
+export const { setSearchKeyword, setIncludeKeyword, setSearchQuery } =
+  seacrhSlice.actions
 export default seacrhSlice.reducer

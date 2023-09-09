@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef } from 'react'
 
 import styled from 'styled-components'
 import { BiSearch } from 'react-icons/bi'
@@ -7,18 +7,19 @@ import SubmitButton from './SubmitButton'
 import useSearchIcon from './hook/useSearchIcon'
 import useDebounce from './hook/useDebounce'
 import { publicApi } from '../../api/publicApi'
-import { useAppDispatch } from '../../store/hooks'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { showAuhtoSearh } from '../../store/slice/modalSlice'
 import {
   setIncludeKeyword,
   setSearchKeyword,
+  setSearchQuery,
 } from '../../store/slice/searchSlice'
 
 const SearchInput = () => {
-  const [searchWord, setSearchWord] = useState('')
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const dispatch = useAppDispatch()
+  const { searchQuery } = useAppSelector((state) => state.search)
 
   const [isShowSearchIcon, changeSearchIconShow] = useSearchIcon()
   const [dispatchDebounce] = useDebounce()
@@ -30,19 +31,19 @@ const SearchInput = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
-    setSearchWord(value)
+    dispatch(setSearchQuery(value))
   }
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (searchWord !== '') {
-      dispatch(setSearchKeyword({ id: searchWord, text: searchWord }))
+    if (searchQuery !== '') {
+      dispatch(setSearchKeyword({ id: searchQuery, text: searchQuery }))
     }
 
     InputValueInit()
     dispatch(setIncludeKeyword([]))
-    setSearchWord('')
+    dispatch(setSearchQuery(''))
   }
 
   const InputValueInit = () => {
@@ -66,8 +67,8 @@ const SearchInput = () => {
       }
     }
 
-    fetchSearchWord(searchWord)
-  }, [searchWord])
+    fetchSearchWord(searchQuery)
+  }, [searchQuery])
 
   return (
     <Box onSubmit={handleSearchSubmit}>
