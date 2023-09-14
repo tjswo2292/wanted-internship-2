@@ -14,12 +14,15 @@ import {
   setSearchKeyword,
   setSearchQuery,
 } from '../../store/slice/searchSlice'
+import { localStorageManager } from '../../util/storage'
 
 const SearchInput = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const dispatch = useAppDispatch()
-  const { searchQuery } = useAppSelector((state) => state.search)
+  const { searchKeywordList, includeKeywordList, searchQuery } = useAppSelector(
+    (state) => state.search,
+  )
 
   const [isShowSearchIcon, changeSearchIconShow] = useSearchIcon()
   const [dispatchDebounce] = useDebounce()
@@ -34,23 +37,42 @@ const SearchInput = () => {
     dispatch(setSearchQuery(value))
   }
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (searchQuery !== '') {
-      dispatch(setSearchKeyword({ id: searchQuery, text: searchQuery }))
-    }
-
-    InputValueInit()
-    dispatch(setIncludeKeyword([]))
-    dispatch(setSearchQuery(''))
-  }
-
   const InputValueInit = () => {
     if (inputRef.current) {
       inputRef.current.value = ''
       inputRef.current.focus()
     }
+  }
+
+  const resetFormState = () => {
+    InputValueInit()
+    dispatch(setIncludeKeyword([]))
+    dispatch(setSearchQuery(''))
+  }
+
+  const saveSearchQueryToLocalStorage = () => {
+    localStorageManager.GET(searchQuery) === null &&
+      localStorageManager.SET(searchQuery, includeKeywordList)
+  }
+
+  const dispatchSearchKeyword = () => {
+    searchKeywordList.some(({ id }) => id === searchQuery) ||
+      dispatch(setSearchKeyword({ id: searchQuery, text: searchQuery }))
+  }
+
+  const dispatchIncludeKeyword = (dispatchData: object[]) => {
+    dispatch(setIncludeKeyword(dispatchData))
+  }
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (searchQuery !== '') {
+      saveSearchQueryToLocalStorage()
+      dispatchSearchKeyword()
+    }
+
+    resetFormState()
   }
 
   useEffect(() => {
@@ -59,12 +81,19 @@ const SearchInput = () => {
       try {
         const response = await publicApi.GET(searchKeyword)
 
-        searchKeyword === ''
-          ? dispatch(setIncludeKeyword([]))
-          : dispatch(setIncludeKeyword(response.data))
+        dispatchIncludeKeyword(searchKeyword === '' ? [] : response.data)
       } catch (error) {
         console.log(error)
       }
+    }
+
+    if (localStorageManager.GET(searchQuery) === null) {
+      fetchSearchWord(searchQuery)
+    } else {
+      const parsingKeyword = JSON.parse(
+        `${localStorageManager.GET(searchQuery)}`,
+      )
+      dispatchIncludeKeyword(parsingKeyword)
     }
 
     fetchSearchWord(searchQuery)
