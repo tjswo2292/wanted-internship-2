@@ -105,6 +105,12 @@ const SearchInput = () => {
       ) {
         localStorageManager.DELETE(searchQuery)
         fetchSearchWord(searchQuery)
+      } else {
+        dispatch(
+          setIncludeKeyword(
+            JSON.parse(`${localStorageManager.GET(searchQuery)}`).slice(0, -1),
+          ),
+        )
       }
     }
   }, [searchQuery])
