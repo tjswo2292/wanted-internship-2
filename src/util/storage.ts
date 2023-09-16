@@ -1,13 +1,11 @@
-const SEARCH_CACHE = 'search_cache'
-
 export const localStorageManager = {
-  GET: () => {
-    return localStorage.get(SEARCH_CACHE)
+  GET: (key: string): string | null => {
+    return localStorage.getItem(key)
   },
-  SET: (cacheData: object[]) => {
-    return localStorage.set(SEARCH_CACHE, cacheData)
+  SET: (key: string, cacheData: object[]) => {
+    return localStorage.setItem(key, JSON.stringify(cacheData))
   },
-  DELETE: () => {
-    return localStorage.removeItem(SEARCH_CACHE)
+  DELETE: (key: string) => {
+    return localStorage.removeItem(key)
   },
 }
