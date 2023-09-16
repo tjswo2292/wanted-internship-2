@@ -33,7 +33,7 @@ export const seacrhSlice = createSlice({
       state,
       action: PayloadAction<IncludeKeywordItemType[]>,
     ) => {
-      state.includeKeywordList = [...action.payload]
+      state.includeKeywordList = action.payload
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload

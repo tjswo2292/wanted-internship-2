@@ -15,6 +15,7 @@ import {
   setSearchQuery,
 } from '../../store/slice/searchSlice'
 import { localStorageManager } from '../../util/storage'
+import { EXPIRE_TIME, MILLI_SECOND } from '../../util/consts'
 
 const SearchInput = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -46,13 +47,18 @@ const SearchInput = () => {
 
   const resetFormState = () => {
     InputValueInit()
-    dispatch(setIncludeKeyword([]))
     dispatch(setSearchQuery(''))
   }
 
   const saveSearchQueryToLocalStorage = () => {
+    const date = new Date()
+    const cachingTime = date.getTime() / MILLI_SECOND + EXPIRE_TIME
+
     localStorageManager.GET(searchQuery) === null &&
-      localStorageManager.SET(searchQuery, includeKeywordList)
+      localStorageManager.SET(searchQuery, [
+        ...includeKeywordList,
+        { expireTime: cachingTime },
+      ])
   }
 
   const dispatchSearchKeyword = () => {
@@ -77,11 +83,11 @@ const SearchInput = () => {
 
   useEffect(() => {
     const fetchSearchWord = async (searchKeyword: string) => {
-      console.log('calling api')
+      console.log('api 호출')
       try {
         const response = await publicApi.GET(searchKeyword)
 
-        dispatchIncludeKeyword(searchKeyword === '' ? [] : response.data)
+        searchQuery === '' || dispatchIncludeKeyword(response.data)
       } catch (error) {
         console.log(error)
       }
@@ -90,13 +96,23 @@ const SearchInput = () => {
     if (localStorageManager.GET(searchQuery) === null) {
       fetchSearchWord(searchQuery)
     } else {
-      const parsingKeyword = JSON.parse(
-        `${localStorageManager.GET(searchQuery)}`,
-      )
-      dispatchIncludeKeyword(parsingKeyword)
-    }
+      const now = new Date()
 
-    fetchSearchWord(searchQuery)
+      if (
+        now.getTime() / 1000 >
+        JSON.parse(`${localStorageManager.GET(searchQuery)}`)?.slice(-1)[0]
+          .expireTime
+      ) {
+        localStorageManager.DELETE(searchQuery)
+        fetchSearchWord(searchQuery)
+      } else {
+        dispatch(
+          setIncludeKeyword(
+            JSON.parse(`${localStorageManager.GET(searchQuery)}`).slice(0, -1),
+          ),
+        )
+      }
+    }
   }, [searchQuery])
 
   return (
