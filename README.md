@@ -1,4 +1,4 @@
-<h1>Wanted Front-End Internship Mission[1]</h1>
+<h1>Wanted Front-End Internship Mission[2]</h1>
 
 # 기술스택
 
@@ -15,6 +15,24 @@
 ### style
 
 ![Styled-Components](https://img.shields.io/badge/styled--components%20CSS-DB7093?style=for-the-badge&logo=styledcomponents&logoColor=white)
+
+# 버전 정보
+
+| 이름               | 버전    |
+| ----------------- | ------- |
+| node              | ^18.7.0 |
+| npm               | ^9.8.1 |
+| react             | ^18.2.0 |
+
+# 프로젝트 실행
+
+server repository
+- https://github.com/walking-sunset/assignment-api
+
+```
+npm install
+npm start
+```
 
 # 주요기능
 
